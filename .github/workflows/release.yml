@@ -1,82 +1,56 @@
 name: Release
 
-# Reusable release for vinicunca package repositories.
-# npm trusted publishing matches the caller workflow filename (release.yml in
-# each package repo), not this file. id-token: write is required on both.
-# Do not set NODE_AUTH_TOKEN, NPM_TOKEN, or NPM_ID_TOKEN.
-
 on:
   workflow_call:
     inputs:
       github-release:
-        description: Create a GitHub release with changelogithub
         required: false
         type: boolean
         default: true
       publish:
-        description: Publish workspace packages to npm
         required: false
         type: boolean
         default: false
       stage:
-        description: Prefix the publish command with `stage` (`pnpm stage publish`)
         required: false
         type: boolean
         default: false
       build:
-        description: Command to run before publish when publish is true
         required: false
         type: string
-        default: ''
+        default: ""
       tag:
-        description: npm dist-tag (`--tag`)
         required: false
         type: string
-        default: ''
+        default: ""
 
 jobs:
   release:
     name: Release
-    # GitHub-hosted runner. npm trusted publishing does not accept self-hosted runners.
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
       id-token: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup JS
+        uses: sxzz/workflows/setup-js@main
         with:
-          persist-credentials: false
-          fetch-depth: 0
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          # Current Node LTS. Trusted publishing requires Node.js 22.14 or newer.
-          node-version: lts/*
-          # Do not set registry-url. That input writes
-          # //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN} and would
-          # interfere with the OIDC exchange.
-          package-manager-cache: false
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          fetch-all: true
+          cache: false
 
       - name: Generate GitHub Changelog
-        if: ${{ inputs.github-release }}
+        run: pnpx changelogithub
         continue-on-error: true
+        if: ${{ inputs.github-release }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: pnpx changelogithub
 
       - name: Build
-        if: ${{ inputs.build && inputs.publish }}
         run: ${{ inputs.build }}
+        if: ${{ inputs.build && inputs.publish }}
 
-      - name: Publish to npm
-        if: ${{ inputs.publish || inputs.stage }}
+      - name: Publish to NPM
         run: pnpm -r ${{ inputs.stage && 'stage ' || '' }}publish --access public --no-git-checks ${{ inputs['tag'] && format('--tag {0}', inputs['tag']) || '' }}
+        if: ${{ inputs.publish || inputs.stage }}

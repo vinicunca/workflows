@@ -1,0 +1,4 @@
+{
+  extends: ["github>vinicunca/renovate-config"],
+  ignorePaths: [],
+}

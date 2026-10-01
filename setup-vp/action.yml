@@ -1,0 +1,43 @@
+name: Setup Vite Plus
+description: Setup Vite Plus environment
+
+inputs:
+  persist-credentials:
+    description: Whether to configure the token or SSH key with the local git config
+    default: 'false'
+
+  fetch-all:
+    description: Whether to fetch all history for all branches and tags.
+    default: 'false'
+
+  node-version:
+    description: 'Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.'
+    default: 'lts/*'
+
+  auto-install:
+    description: Whether to automatically install dependencies.
+    default: 'true'
+
+  cache:
+    description: Whether to enable caching for node modules.
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: ${{ inputs.persist-credentials }}
+        fetch-depth: "${{ inputs.fetch-all == 'true' && '0' || '1' }}"
+
+    - name: Setup Vite Plus
+      uses: voidzero-dev/setup-vp@313600b80b104eadebb9111787d37a2e83e014ca # v1.17.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache }}
+
+    - name: Install dependencies
+      shell: bash
+      run: vp install
+      if: ${{ inputs.auto-install }}

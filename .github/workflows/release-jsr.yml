@@ -1,0 +1,28 @@
+name: Release JSR
+
+on:
+  workflow_call:
+    inputs:
+      build:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  release-jsr:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Setup JS
+        uses: vinicunca/workflows/setup-js@main
+
+      - name: Build
+        run: ${{ inputs.build }}
+        if: ${{ inputs.build }}
+
+      - name: Publish to JSR
+        run: pnpx jsr publish

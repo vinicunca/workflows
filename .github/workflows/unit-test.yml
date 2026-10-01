@@ -1,0 +1,103 @@
+name: Unit Test
+
+on:
+  workflow_call:
+    inputs:
+      primary-os:
+        required: false
+        type: string
+        default: ubuntu-latest
+
+      os-matrix:
+        required: false
+        type: string
+        default: '"ubuntu-latest", "windows-latest"'
+
+      node-versions:
+        required: false
+        type: string
+        default: "22,24,26"
+
+      typecheck:
+        required: false
+        type: string
+        default: pnpm run typecheck
+
+      lint:
+        required: false
+        type: string
+        default: pnpm run lint
+
+      build:
+        required: false
+        type: string
+        default: pnpm run build
+
+      test:
+        required: false
+        type: string
+        default: pnpm run test
+
+      skip-lint:
+        required: false
+        type: boolean
+        default: false
+
+      skip-test:
+        required: false
+        type: boolean
+        default: false
+
+      build-for-lint:
+        required: false
+        type: boolean
+        default: false
+
+      persist-credentials:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  lint:
+    runs-on: ${{ inputs.primary-os }}
+    if: ${{ !inputs.skip-lint }}
+    steps:
+      - name: Setup JS
+        uses: sxzz/workflows/setup-js@main
+        with:
+          persist-credentials: ${{ inputs.persist-credentials }}
+
+      - name: Build
+        run: ${{ inputs.build }}
+        if: ${{ inputs.build-for-lint }}
+
+      - name: Type Check
+        run: ${{ inputs.typecheck }}
+        if: ${{ inputs.typecheck != '' }}
+
+      - name: Lint
+        run: ${{ inputs.lint }}
+        if: ${{ inputs.lint != '' }}
+
+  test:
+    strategy:
+      matrix:
+        os: ${{ fromJson(format('[{0}]', inputs.os-matrix)) }}
+        node-version: ${{ fromJson(format('[{0}]', inputs.node-versions)) }}
+      fail-fast: false
+
+    if: ${{ !inputs.skip-test }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Setup JS
+        uses: sxzz/workflows/setup-js@main
+        with:
+          node-version: ${{ matrix.node-version }}
+          persist-credentials: ${{ inputs.persist-credentials }}
+
+      - name: Build
+        run: ${{ inputs.build }}
+
+      - name: Unit Test
+        run: ${{ inputs.test }}

@@ -1,0 +1,60 @@
+name: Setup JavaScript
+description: Setup JavaScript environment
+
+inputs:
+  persist-credentials:
+    description: Whether to configure the token or SSH key with the local git config
+    default: 'false'
+
+  fetch-all:
+    description: Whether to fetch all history for all branches and tags.
+    default: 'false'
+
+  node-version:
+    description: 'Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.'
+    default: 'lts/*'
+
+  auto-install:
+    description: Whether to automatically install dependencies.
+    default: 'true'
+
+  package-manager:
+    description: 'Package manager to use. Examples: npm, yarn, pnpm.'
+    default: pnpm
+
+  no-frozen-lockfile:
+    description: Whether to disable frozen lockfile installation.
+    default: 'false'
+
+  cache:
+    description: Whether to enable caching for node modules.
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: ${{ inputs.persist-credentials }}
+        fetch-depth: "${{ inputs.fetch-all == 'true' && '0' || '1' }}"
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+      if: ${{ inputs.package-manager == 'pnpm' }}
+
+    - name: Setup node
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache == 'true' && inputs.package-manager || '' }}
+        package-manager-cache: ${{ inputs.cache }}
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Install dependencies
+      shell: bash
+      env:
+        PACKAGE_MANAGER: ${{ inputs.package-manager }}
+        NO_FROZEN_LOCKFILE: ${{ inputs.no-frozen-lockfile == 'true' && '--no-frozen-lockfile' || '' }}
+      run: $PACKAGE_MANAGER install $NO_FROZEN_LOCKFILE
+      if: ${{ inputs.auto-install }}
