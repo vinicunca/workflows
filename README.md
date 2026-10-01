@@ -14,7 +14,7 @@ Package repositories pin it as:
 uses: vinicunca/workflows/.github/workflows/release.yml@v1
 ```
 
-`eslint-config`, `perkakas`, and `unocss-preset-vinicunca` can switch from `sxzz/workflows` by changing only that `uses` line. Keep `with: publish: true` and the same permissions.
+`eslint-config`, `perkakas`, and `unocss-preset-vinicunca` can switch from `vinicunca/workflows` by changing only that `uses` line. Keep `with: publish: true` and the same permissions.
 
 ### Caller
 
@@ -24,7 +24,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   release:
@@ -40,13 +40,13 @@ jobs:
 
 ### Inputs
 
-| Input | Type | Default | Effect |
-| --- | --- | --- | --- |
-| `github-release` | boolean | `true` | Run `pnpx changelogithub` to open the GitHub release. A failure there is ignored (`continue-on-error`) so publishing can still continue. |
-| `publish` | boolean | `false` | Publish with pnpm. |
-| `stage` | boolean | `false` | Use `pnpm stage publish` instead of `pnpm publish`. |
-| `build` | string | `''` | Shell command run before publish. It runs only when it is non-empty and `publish` is `true`. |
-| `tag` | string | `''` | Passed through as `--tag <value>` when set. |
+| Input            | Type    | Default | Effect                                                                                                                                   |
+| ---------------- | ------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `github-release` | boolean | `true`  | Run `pnpx changelogithub` to open the GitHub release. A failure there is ignored (`continue-on-error`) so publishing can still continue. |
+| `publish`        | boolean | `false` | Publish with pnpm.                                                                                                                       |
+| `stage`          | boolean | `false` | Use `pnpm stage publish` instead of `pnpm publish`.                                                                                      |
+| `build`          | string  | `''`    | Shell command run before publish. It runs only when it is non-empty and `publish` is `true`.                                             |
+| `tag`            | string  | `''`    | Passed through as `--tag <value>` when set.                                                                                              |
 
 Leave `build` empty when the package already builds from `prepublish` or `prepublishOnly`. `pnpm publish` runs those scripts.
 
@@ -85,21 +85,21 @@ npm's current trusted-publishing docs: when `npm publish` runs inside `workflow_
 
 ### Fields
 
-| Field | Value |
-| --- | --- |
-| Organization or user | `vinicunca` (the GitHub org or user that owns the package repository) |
-| Repository | The package repository name, such as `eslint-config`. Not `workflows`. |
-| Workflow filename | `release.yml`. The filename only, including `.yml`. This is the caller file in the package repository, not a path and not this shared workflow. |
-| Environment name | Leave empty unless the caller job sets `environment`. The caller above does not. |
-| Allowed actions | Allow **npm publish**. Configurations created after 3 September 2026 allow `npm stage publish` automatically; direct `pnpm publish` still needs **npm publish** enabled. |
+| Field                | Value                                                                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Organization or user | `vinicunca` (the GitHub org or user that owns the package repository)                                                                                                    |
+| Repository           | The package repository name, such as `eslint-config`. Not `workflows`.                                                                                                   |
+| Workflow filename    | `release.yml`. The filename only, including `.yml`. This is the caller file in the package repository, not a path and not this shared workflow.                          |
+| Environment name     | Leave empty unless the caller job sets `environment`. The caller above does not.                                                                                         |
+| Allowed actions      | Allow **npm publish**. Configurations created after 3 September 2026 allow `npm stage publish` automatically; direct `pnpm publish` still needs **npm publish** enabled. |
 
 The workflow file named in that form must exist at `.github/workflows/release.yml` in the package repository.
 
-| Package repository | Organization or user | Repository | Workflow filename | npm publish |
-| --- | --- | --- | --- | --- |
-| `vinicunca/eslint-config` | `vinicunca` | `eslint-config` | `release.yml` | allow |
-| `vinicunca/perkakas` | `vinicunca` | `perkakas` | `release.yml` | allow |
-| `vinicunca/unocss-preset-vinicunca` | `vinicunca` | `unocss-preset-vinicunca` | `release.yml` | allow |
+| Package repository                  | Organization or user | Repository                | Workflow filename | npm publish |
+| ----------------------------------- | -------------------- | ------------------------- | ----------------- | ----------- |
+| `vinicunca/eslint-config`           | `vinicunca`          | `eslint-config`           | `release.yml`     | allow       |
+| `vinicunca/perkakas`                | `vinicunca`          | `perkakas`                | `release.yml`     | allow       |
+| `vinicunca/unocss-preset-vinicunca` | `vinicunca`          | `unocss-preset-vinicunca` | `release.yml`     | allow       |
 
 Each package's `repository.url` must match that GitHub repository. Provenance is generated only for a public package published from a public repository.
 

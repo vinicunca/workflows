@@ -64,7 +64,7 @@ jobs:
     if: ${{ !inputs.skip-lint }}
     steps:
       - name: Setup JS
-        uses: sxzz/workflows/setup-js@main
+        uses: vinicunca/workflows/setup-js@main
         with:
           persist-credentials: ${{ inputs.persist-credentials }}
 
@@ -91,7 +91,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup JS
-        uses: sxzz/workflows/setup-js@main
+        uses: vinicunca/workflows/setup-js@main
         with:
           node-version: ${{ matrix.node-version }}
           persist-credentials: ${{ inputs.persist-credentials }}

@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Setup JS
-        uses: sxzz/workflows/setup-js@main
+        uses: vinicunca/workflows/setup-js@main
         with:
           fetch-all: true
           cache: false
