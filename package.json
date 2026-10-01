@@ -1,0 +1,23 @@
+{
+  "type": "module",
+  "private": true,
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.5.0",
+      "onFail": "download"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "echo skip typecheck",
+    "build": "echo skip build",
+    "test": "echo skip test"
+  },
+  "devDependencies": {
+    "@vinicunca/eslint-config": "^5.7.1",
+    "eslint": "^10.8.1"
+  }
+}
