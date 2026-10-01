@@ -11,7 +11,6 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint .",
-    "format": "prettier --write .",
     "typecheck": "echo skip typecheck",
     "build": "echo skip build",
     "test": "echo skip test"

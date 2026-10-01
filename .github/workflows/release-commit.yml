@@ -13,11 +13,11 @@ on:
       packages:
         required: false
         type: string
-        default: ""
+        default: ''
       comment-package-manager:
         required: false
         type: string
-        default: ""
+        default: ''
       comment-with-dev:
         required: false
         type: boolean
