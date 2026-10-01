@@ -18,11 +18,11 @@ on:
       build:
         required: false
         type: string
-        default: ""
+        default: ''
       tag:
         required: false
         type: string
-        default: ""
+        default: ''
 
 jobs:
   release:
